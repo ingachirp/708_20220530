@@ -58,8 +58,31 @@ const cli = require('nodemon/lib/cli');
               response.send(result);
                client.close();
             }
-          });
-              
+          });              
+        }
+    });
+  });
+
+  app.put("/knygos", (request, response) => {
+    client.connect(function(err, client) {
+      if (err) {
+        response.send("Something went wrong!!");
+        client.close();
+      } else {
+        const database = client.db("DB_CRUD");
+        const collection = database.collection("knygos");
+        const { _id, bookTitle, bookPageCount, bookPrice } = request.body;
+        const filter = { _id: ObjectId(_id) };
+        const newValues = { titile: bookTitle, pageCount: bookPageCount, price: bookPrice };
+        collection.replaceOne(filter, newValues, function (err, result) {
+            if (err) {
+              response.send("Something went wrong!!");
+              client.close();
+            } else {
+              response.send(result);
+               client.close();
+            }
+          });              
         }
     });
   });
