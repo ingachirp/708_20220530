@@ -71,9 +71,9 @@ const cli = require('nodemon/lib/cli');
       } else {
         const database = client.db("DB_CRUD");
         const collection = database.collection("knygos");
-        const { _id, bookTitle, bookPageCount, bookPrice } = request.body;
+        const { _id, bookTitle, bookPageCount, bookPrice, email } = request.body;
         const filter = { _id: ObjectId(_id) };
-        const newValues = { titile: bookTitle, pageCount: bookPageCount, price: bookPrice };
+        const newValues = { title: bookTitle, pageCount: bookPageCount, price: bookPrice, email: email };
         collection.replaceOne(filter, newValues, function (err, result) {
             if (err) {
               response.send("Something went wrong!!");
