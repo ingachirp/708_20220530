@@ -46,8 +46,8 @@ const cli = require('nodemon/lib/cli');
         const database = client.db("DB_CRUD");
         const collection = database.collection("knygos");
         const { _id, bookTitle, bookPageCount, bookPrice } = request.body;
-        // const _id = req.params.body._id;
-        // const name = req.params.body.name;
+        // const _id = req.body._id;
+        // const name = req.body.name;
         const filter = { _id: ObjectId(_id) };
         const newValues = { $set: { pageCount: bookPageCount } };
         collection.updateOne(filter, newValues, function (err, result) {
