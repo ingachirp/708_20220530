@@ -11,6 +11,7 @@ const {
     ServerApiVersion,
     ObjectId,
   } = require('mongodb');
+const cli = require('nodemon/lib/cli');
   
   const uri = 'mongodb+srv://IngridaVIGI13:byuhblf77@cluster0.eipbj.mongodb.net/?retryWrites=true&w=majority';
   const client = new MongoClient(uri, {
@@ -33,5 +34,32 @@ const {
       response.json(result);
   
       client.close();
+    });
+  });
+
+  app.patch("/knygos", (request, response) => {
+    client.connect(function(err, client) {
+      if (err) {
+        response.send("Something went wrong!!");
+        client.close();
+      } else {
+        const database = client.db("DB_CRUD");
+        const collection = database.collection("knygos");
+        const { _id, bookTitle, bookPageCount, bookPrice } = request.body;
+        // const _id = req.params.body._id;
+        // const name = req.params.body.name;
+        const filter = { _id: ObjectId(_id) };
+        const newValues = { $set: { pageCount: bookPageCount } };
+        collection.updateOne(filter, newValues, function (err, result) {
+            if (err) {
+              response.send("Something went wrong!!");
+              client.close();
+            } else {
+              response.send(result);
+               client.close();
+            }
+          });
+              
+        }
     });
   });
