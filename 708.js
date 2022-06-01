@@ -37,15 +37,20 @@ const cli = require('nodemon/lib/cli');
     });
   });
 
-  app.get('/count/:pageCount', (request, response) => {
+  app.get('/count/:author', (request, response) => {
     client.connect(async () => {
     console.log();
       const database = client.db('DB_CRUD');
       const collection = database.collection('knygos');
-      const bookPageCount = Number(request.params.pageCount);
-      const result = await collection.countDocuments({ pageCount: { $gt: bookPageCount } });
+      const bookAuthor = Number(request.params.author);
+      const result = await collection
+      .aggregate([
+        { $match: { author: request.params.author } },
+        { $group: { _id: "$author", sumaPrice: { $sum: "$price" } } },
+      ])
+      .toArray();
   
-      response.json(`result: ${result}`);
+      response.json(result);
   
       client.close();
     });
@@ -59,11 +64,11 @@ const cli = require('nodemon/lib/cli');
       } else {
         const database = client.db("DB_CRUD");
         const collection = database.collection("knygos");
-        const { _id, bookTitle, bookPageCount, bookPrice } = request.body;
+        const { _id, bookTitle, bookPageCount, bookPrice, bookAuthor } = request.body;
         // const _id = req.body._id;
         // const name = req.body.name;
         const filter = { _id: ObjectId(_id) };
-        const newValues = { $set: { pageCount: bookPageCount } };
+        const newValues = { $set: { pageCount: bookPageCount, author: bookAuthor } };
         collection.updateOne(filter, newValues, function (err, result) {
             if (err) {
               response.send("Something went wrong!!");
@@ -85,9 +90,9 @@ const cli = require('nodemon/lib/cli');
       } else {
         const database = client.db("DB_CRUD");
         const collection = database.collection("knygos");
-        const { _id, bookTitle, bookPageCount, bookPrice, email } = request.body;
+        const { _id, bookTitle, bookPageCount, bookPrice, bookAuthor } = request.body;
         const filter = { _id: ObjectId(_id) };
-        const newValues = { title: bookTitle, pageCount: bookPageCount, price: bookPrice, email: email };
+        const newValues = { title: bookTitle, pageCount: bookPageCount, price: bookPrice, bookAuthor: author };
         collection.replaceOne(filter, newValues, function (err, result) {
             if (err) {
               response.send("Something went wrong!!");

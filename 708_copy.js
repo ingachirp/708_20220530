@@ -62,3 +62,24 @@ app.patch("/user", (req, res) => {
       }
     });
   });
+
+  // randa suma
+
+  app.get("/count", (req, res) => {
+    mongoClient.connect(async function (err, client) {
+      if (err) {
+        res.send("Something went wrong!!");
+        client.close();
+      } else {
+        const database = client.db("usersdb");
+        const collection = database.collection("users");
+        const result = await collection
+          .aggregate([
+            { $match: { age: { $gt: 25 } } },
+            { $group: { _id: "$name", sumaAmziaus: { $sum: "$age" } } },
+          ])
+          .toArray();
+        res.send(`result: ${JSON.stringify(result)}`);
+      }
+    });
+  });
