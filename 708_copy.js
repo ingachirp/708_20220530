@@ -46,3 +46,19 @@ app.patch("/user", (req, res) => {
       }
     });
   });
+
+  // su count
+
+  app.get("/count", (req, res) => {
+    mongoClient.connect(async function (err, client) {
+      if (err) {
+        res.send("Something went wrong!!");
+        client.close();
+      } else {
+        const database = client.db("usersdb");
+        const collection = database.collection("users");
+        const result = await collection.countDocuments({ age: { $gt: 25 } });
+        res.send(`result: ${result}`);
+      }
+    });
+  });

@@ -37,6 +37,20 @@ const cli = require('nodemon/lib/cli');
     });
   });
 
+  app.get('/count/:pageCount', (request, response) => {
+    client.connect(async () => {
+    console.log();
+      const database = client.db('DB_CRUD');
+      const collection = database.collection('knygos');
+      const bookPageCount = Number(request.params.pageCount);
+      const result = await collection.countDocuments({ pageCount: { $gt: bookPageCount } });
+  
+      response.json(`result: ${result}`);
+  
+      client.close();
+    });
+  });
+
   app.patch("/knygos", (request, response) => {
     client.connect(function(err, client) {
       if (err) {
